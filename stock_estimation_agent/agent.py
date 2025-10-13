@@ -70,11 +70,18 @@ class StockEstimationAgent:
             )
         except Exception:  # pragma: no cover - defensive against network failures
             top_gainers = []
+        candidate_symbols = set(self.available_symbols())
+        candidate_symbols.update(g.symbol for g in top_gainers)
+        candidate_symbols.discard(symbol)
         gainer_context = self.top_gainer_analytics.build_context(
             symbol=symbol,
             price_history=user_augmented_history,
             indicators=indicators,
             top_gainers=top_gainers,
+            historical_fetcher=self.historical_fetcher,
+            indicator_calculator=self.indicator_calculator,
+            as_of=as_of,
+            universe_symbols=candidate_symbols,
         )
 
         return self.estimation_engine.estimate(

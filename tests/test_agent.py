@@ -28,7 +28,7 @@ class DummyHistorical(HistoricalDataFetcher):
         return self._frame
 
     def available_symbols(self):
-        return ["TEST"]
+        return ["TEST", "ABC", "XYZ"]
 
 
 class DummyNews(MarketNewsFetcher):
@@ -85,4 +85,5 @@ def test_agent_generates_estimation():
     assert result.news_headlines
     assert isinstance(result.top_gainer_factors, dict)
     assert result.potential_top_gainers
+    assert all(item.get("pattern_confidence", 0) >= 0.3 for item in result.potential_top_gainers)
     assert result.top_gainer_narrative

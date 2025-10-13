@@ -10,8 +10,9 @@ datasets to augment the estimation process.
 - **Verified market data** sourced from Yahoo! Finance and other reputable providers.
 - **News awareness** powered by NewsAPI or local JSON files for offline use.
 - **Comprehensive technical analysis** with moving averages, MACD, RSI, Bollinger Bands, and On-Balance Volume.
-- **Top gainer intelligence** leveraging Webull and Robinhood leaderboards to extract common traits and surface a
-  sidebar of potential momentum candidates.
+- **Top gainer intelligence** leveraging Webull and Robinhood leaderboards to extract common traits, learn 100-day
+  pre-breakout indicator patterns, and surface a sidebar of potential momentum candidates with at least 30% pattern
+  confidence.
 - **User uploaded datasets** that are merged with official market data prior to analysis.
 - **Transparent outputs** including the data sources used and a narrative summary of the drivers
   behind the estimation.
@@ -62,3 +63,8 @@ python main.py AAPL --news-api-key YOUR_NEWSAPI_KEY --user-dataset data/my_alpha
 ```
 
 Results are printed as JSON to stdout unless `--output` is provided.
+
+Each estimation includes a `potential_top_gainers` sidebar summarising U.S. equities that currently exhibit the
+pre-breakout indicator profile learned from the prior 100 days of brokerage leaders. Only symbols meeting the
+learned thresholds with at least 30% confidence are surfaced, and each entry lists the aligned pattern characteristics
+alongside the agent's confidence score.
