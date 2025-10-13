@@ -8,6 +8,7 @@ from typing import Dict, List
 import pandas as pd
 
 from .data_sources import VerifiedSource
+from .top_gainers import TopGainerContext
 
 
 @dataclass
@@ -22,6 +23,9 @@ class EstimationResult:
     supporting_indicators: Dict[str, float]
     news_headlines: List[str]
     sources: List[VerifiedSource]
+    top_gainer_factors: Dict[str, float | str]
+    top_gainer_narrative: str
+    potential_top_gainers: List[Dict[str, float | str]]
 
 
 @dataclass
@@ -51,6 +55,7 @@ class EstimationEngine:
         indicators: Dict[str, pd.Series],
         news: List[dict],
         sources: List[VerifiedSource],
+        gainer_context: TopGainerContext,
     ) -> EstimationResult:
         latest_close = float(price_history["Close"].iloc[-1]) if "Close" in price_history else float(price_history.iloc[-1, 0])
 
@@ -85,9 +90,13 @@ class EstimationEngine:
                 volatility_penalty -= 0.05
 
         qualitative_adjustment = self._news_sentiment_adjustment(news)
+        gainer_bias = gainer_context.alignment_bias
 
-        confidence = max(min(0.5 + trend_bias + qualitative_adjustment + volatility_penalty, 0.95), 0.05)
-        target_price = latest_close * (1 + trend_bias + qualitative_adjustment + volatility_penalty)
+        confidence = max(
+            min(0.5 + trend_bias + qualitative_adjustment + volatility_penalty + gainer_bias, 0.95),
+            0.05,
+        )
+        target_price = latest_close * (1 + trend_bias + qualitative_adjustment + volatility_penalty + gainer_bias)
 
         narrative_parts = [
             f"Latest close for {symbol} is ${latest_close:,.2f}.",
@@ -105,6 +114,13 @@ class EstimationEngine:
         if volatility_penalty < 0:
             narrative_parts.append("Elevated Bollinger band width suggests heightened volatility; confidence trimmed accordingly.")
 
+        if gainer_bias > 0 and gainer_context.narrative:
+            narrative_parts.append(
+                f"Top gainer dynamics align with the current setup, adding conviction. {gainer_context.narrative}"
+            )
+        elif gainer_context.narrative:
+            narrative_parts.append(gainer_context.narrative)
+
         supporting_indicators = {
             "sma_20": float(sma_20.iloc[-1]) if sma_20 is not None else float("nan"),
             "sma_50": float(sma_50.iloc[-1]) if sma_50 is not None else float("nan"),
@@ -112,6 +128,7 @@ class EstimationEngine:
             "rsi_14": float(rsi.iloc[-1]) if rsi is not None else float("nan"),
             "bollinger_upper": float(bollinger_upper.iloc[-1]) if bollinger_upper is not None else float("nan"),
             "bollinger_lower": float(bollinger_lower.iloc[-1]) if bollinger_lower is not None else float("nan"),
+            "top_gainer_alignment_bias": gainer_bias,
         }
 
         news_headlines = [article.get("title", "") for article in news][:5]
@@ -125,6 +142,9 @@ class EstimationEngine:
             supporting_indicators=supporting_indicators,
             news_headlines=news_headlines,
             sources=sources,
+            top_gainer_factors=gainer_context.factors,
+            top_gainer_narrative=gainer_context.narrative,
+            potential_top_gainers=gainer_context.sidebar,
         )
 
     @staticmethod

@@ -10,10 +10,15 @@ import pandas as pd
 
 from stock_estimation_agent.agent import AgentConfig, StockEstimationAgent
 from stock_estimation_agent.builder import create_default_agent
-from stock_estimation_agent.data_sources import StaticHistoricalFetcher
+from stock_estimation_agent.data_sources import (
+    StaticHistoricalFetcher,
+    StaticTopGainersFetcher,
+    TopGainer,
+)
 from stock_estimation_agent.estimation import EstimationEngine, EstimationResult
 from stock_estimation_agent.indicators import IndicatorCalculator
 from stock_estimation_agent.offline import LocalNewsFetcher
+from stock_estimation_agent.top_gainers import TopGainerAnalytics
 
 
 def _load_user_dataset(path: Path) -> pd.DataFrame:
@@ -41,7 +46,42 @@ def _serialize_result(result: EstimationResult) -> Dict[str, Any]:
         "supporting_indicators": result.supporting_indicators,
         "news_headlines": result.news_headlines,
         "sources": [source.__dict__ for source in result.sources],
+        "top_gainer_factors": result.top_gainer_factors,
+        "top_gainer_narrative": result.top_gainer_narrative,
+        "potential_top_gainers": result.potential_top_gainers,
     }
+
+
+def _load_top_gainers(path: Path) -> list[TopGainer]:
+    payload = json.loads(path.read_text())
+    gainers: list[TopGainer] = []
+    for entry in payload:
+        def _maybe_int(value):
+            try:
+                return int(value) if value is not None else None
+            except (TypeError, ValueError):
+                return None
+
+        def _maybe_float(value):
+            try:
+                return float(value) if value is not None else None
+            except (TypeError, ValueError):
+                return None
+
+        gainers.append(
+            TopGainer(
+                symbol=entry.get("symbol", ""),
+                name=entry.get("name", ""),
+                last_price=_maybe_float(entry.get("last_price")) or 0.0,
+                percent_change=_maybe_float(entry.get("percent_change")) or 0.0,
+                volume=_maybe_int(entry.get("volume")),
+                average_volume=_maybe_int(entry.get("average_volume")),
+                market_cap=_maybe_float(entry.get("market_cap")),
+                source=entry.get("source", "user"),
+                sector=entry.get("sector"),
+            )
+        )
+    return gainers
 
 
 def build_agent(args: argparse.Namespace, estimation_engine: EstimationEngine) -> StockEstimationAgent:
@@ -54,11 +94,14 @@ def build_agent(args: argparse.Namespace, estimation_engine: EstimationEngine) -
         history = pd.read_csv(args.historical_csv, index_col=0, parse_dates=True)
         historical_fetcher = StaticHistoricalFetcher({args.symbol: history})
         news_fetcher = LocalNewsFetcher(args.news_json)
+        top_gainers = _load_top_gainers(args.top_gainers_json) if args.top_gainers_json else []
         agent = StockEstimationAgent(
             historical_fetcher=historical_fetcher,
             news_fetcher=news_fetcher,
             indicator_calculator=IndicatorCalculator(),
             estimation_engine=estimation_engine,
+            top_gainers_fetcher=StaticTopGainersFetcher(top_gainers),
+            top_gainer_analytics=TopGainerAnalytics(),
         )
     else:
         if args.news_api_key is None:
@@ -95,6 +138,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--historical-csv", type=Path, help="Historical prices CSV for offline mode.")
     parser.add_argument("--news-json", type=Path, help="News JSON file for offline mode.")
+    parser.add_argument(
+        "--top-gainers-json",
+        type=Path,
+        help="Optional JSON array describing recent top gainers for offline mode.",
+    )
     parser.add_argument("--output", type=Path, help="Optional path to write the JSON result.")
     return parser.parse_args()
 

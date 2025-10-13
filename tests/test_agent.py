@@ -6,9 +6,16 @@ pandas = pytest.importorskip("pandas")
 pd = pandas
 
 from stock_estimation_agent.agent import AgentConfig, StockEstimationAgent
-from stock_estimation_agent.data_sources import HistoricalDataFetcher, MarketNewsFetcher, VerifiedSource
+from stock_estimation_agent.data_sources import (
+    HistoricalDataFetcher,
+    MarketNewsFetcher,
+    StaticTopGainersFetcher,
+    TopGainer,
+    VerifiedSource,
+)
 from stock_estimation_agent.estimation import EstimationEngine
 from stock_estimation_agent.indicators import IndicatorCalculator
+from stock_estimation_agent.top_gainers import TopGainerAnalytics
 
 
 class DummyHistorical(HistoricalDataFetcher):
@@ -54,12 +61,18 @@ def test_agent_generates_estimation():
     news = DummyNews()
     indicators = IndicatorCalculator()
     estimation = EstimationEngine()
+    gainers = [
+        TopGainer(symbol="ABC", name="Alpha Brands", last_price=50.0, percent_change=8.5, volume=2_000_000, average_volume=1_000_000, source="Webull"),
+        TopGainer(symbol="XYZ", name="Xylon Corp", last_price=32.0, percent_change=6.2, volume=1_500_000, average_volume=700_000, source="Robinhood"),
+    ]
 
     agent = StockEstimationAgent(
         historical_fetcher=historical,
         news_fetcher=news,
         indicator_calculator=indicators,
         estimation_engine=estimation,
+        top_gainers_fetcher=StaticTopGainersFetcher(gainers),
+        top_gainer_analytics=TopGainerAnalytics(),
         config=AgentConfig(history_lookback=365, news_window_days=7, min_data_points=60),
     )
 
@@ -70,3 +83,6 @@ def test_agent_generates_estimation():
     assert 0.05 <= result.confidence <= 0.95
     assert result.supporting_indicators["sma_20"] > 0
     assert result.news_headlines
+    assert isinstance(result.top_gainer_factors, dict)
+    assert result.potential_top_gainers
+    assert result.top_gainer_narrative

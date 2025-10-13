@@ -10,11 +10,13 @@ import pandas as pd
 from .data_sources import (
     HistoricalDataFetcher,
     MarketNewsFetcher,
+    TopGainersFetcher,
     VerifiedSource,
 )
 from .indicators import IndicatorCalculator
 from .estimation import EstimationEngine, EstimationResult
 from .user_data import UserDatasetRegistry
+from .top_gainers import TopGainerAnalytics
 
 
 @dataclass
@@ -24,6 +26,7 @@ class AgentConfig:
     history_lookback: int = 365
     news_window_days: int = 7
     min_data_points: int = 60
+    top_gainers_lookback_days: int = 5
 
 
 @dataclass
@@ -34,6 +37,8 @@ class StockEstimationAgent:
     news_fetcher: MarketNewsFetcher
     indicator_calculator: IndicatorCalculator
     estimation_engine: EstimationEngine
+    top_gainers_fetcher: TopGainersFetcher
+    top_gainer_analytics: TopGainerAnalytics
     user_registry: UserDatasetRegistry = field(default_factory=UserDatasetRegistry)
     config: AgentConfig = field(default_factory=AgentConfig)
 
@@ -58,12 +63,27 @@ class StockEstimationAgent:
 
         news = self.news_fetcher.fetch(symbol, as_of=as_of, window_days=self.config.news_window_days)
 
+        try:
+            top_gainers = self.top_gainers_fetcher.fetch(
+                as_of=as_of,
+                lookback_days=self.config.top_gainers_lookback_days,
+            )
+        except Exception:  # pragma: no cover - defensive against network failures
+            top_gainers = []
+        gainer_context = self.top_gainer_analytics.build_context(
+            symbol=symbol,
+            price_history=user_augmented_history,
+            indicators=indicators,
+            top_gainers=top_gainers,
+        )
+
         return self.estimation_engine.estimate(
             symbol=symbol,
             price_history=user_augmented_history,
             indicators=indicators,
             news=news,
             sources=self.collate_sources(),
+            gainer_context=gainer_context,
         )
 
     def collate_sources(self) -> List[VerifiedSource]:
@@ -74,6 +94,8 @@ class StockEstimationAgent:
         sources.extend(self.news_fetcher.verified_sources)
         sources.extend(self.indicator_calculator.verified_sources)
         sources.extend(self.estimation_engine.verified_sources)
+        sources.extend(self.top_gainers_fetcher.verified_sources)
+        sources.extend(self.top_gainer_analytics.verified_sources)
         return sources
 
     def register_user_dataset(self, symbol: str, dataset: pd.DataFrame) -> None:
@@ -95,4 +117,5 @@ class StockEstimationAgent:
             "history_lookback_days": self.config.history_lookback,
             "news_window_days": self.config.news_window_days,
             "min_data_points": self.config.min_data_points,
+            "top_gainers_lookback_days": self.config.top_gainers_lookback_days,
         }

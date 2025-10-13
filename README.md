@@ -10,6 +10,8 @@ datasets to augment the estimation process.
 - **Verified market data** sourced from Yahoo! Finance and other reputable providers.
 - **News awareness** powered by NewsAPI or local JSON files for offline use.
 - **Comprehensive technical analysis** with moving averages, MACD, RSI, Bollinger Bands, and On-Balance Volume.
+- **Top gainer intelligence** leveraging Webull and Robinhood leaderboards to extract common traits and surface a
+  sidebar of potential momentum candidates.
 - **User uploaded datasets** that are merged with official market data prior to analysis.
 - **Transparent outputs** including the data sources used and a narrative summary of the drivers
   behind the estimation.
@@ -44,8 +46,13 @@ file should contain a list of objects with at least `title`, `publishedAt`, and 
 `symbols` array listing the tickers each headline references.
 
 ```bash
-python main.py AAPL --offline --historical-csv data/aapl.csv --news-json data/aapl_news.json
+python main.py AAPL --offline --historical-csv data/aapl.csv --news-json data/aapl_news.json \
+    --top-gainers-json data/top_gainers.json
 ```
+
+When running offline you may optionally provide a JSON array of recent top gainers containing
+`symbol`, `name`, `last_price`, `percent_change`, and optional volume/sector metadata so the agent can
+continue to profile market leadership without making external calls.
 
 You can add proprietary indicators or alternative datasets with the `--user-dataset` flag. Each
 file is merged by timestamp before indicators are computed.
