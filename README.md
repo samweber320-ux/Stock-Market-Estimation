@@ -68,3 +68,21 @@ Each estimation includes a `potential_top_gainers` sidebar summarising U.S. equi
 pre-breakout indicator profile learned from the prior 100 days of brokerage leaders. Only symbols meeting the
 learned thresholds with at least 30% confidence are surfaced, and each entry lists the aligned pattern characteristics
 alongside the agent's confidence score.
+
+### Offline recommendation snapshot
+
+For scenarios where network access is unavailable, the repository ships with a curated
+`research/offline_recommendations.json` file that distils three liquid U.S. leaders (NVDA, MSFT, LLY) using
+pre-captured technical, fundamental, and news checkpoints from TradingView, MarketSmith, Reuters, Bloomberg, CNBC,
+the Wall Street Journal, Microsoft Investor Relations, NVIDIA Investor Relations, Eli Lilly Investor Relations, and
+the U.S. Food and Drug Administration. Load the snapshot with:
+
+```python
+from stock_estimation_agent.offline_recommendations import load_offline_recommendations
+
+for idea in load_offline_recommendations():
+    print(idea.to_dict())
+```
+
+The helper mirrors the agent's source tracking so you can reference the underlying verified articles and filings when
+responding to investment due diligence questions without re-running the full estimation pipeline.

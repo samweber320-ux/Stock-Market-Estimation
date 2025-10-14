@@ -1,0 +1,152 @@
+[
+  {
+    "symbol": "NVDA",
+    "company": "NVIDIA Corporation",
+    "pattern_confidence": 0.37,
+    "thesis": "Accelerating AI infrastructure demand keeps price leadership intact while technicals remain in a high-probability breakout configuration.",
+    "technical_snapshot": [
+      "Offline snapshot captured 2024-03-15 from TradingView showed price at $875, 50-day SMA at $823, and 200-day SMA at $568, confirming a sustained golden-cross structure.",
+      "Relative strength index held at 58 with positive volume trend, indicating controlled momentum rather than exhaustion according to MarketSmith export from 2024-03-15."
+    ],
+    "fundamental_snapshot": [
+      "Q2 FY2024 revenue reached $13.51B (+101% YoY) with data center revenue up 171% YoY as reported in NVIDIA's Aug 23, 2023 earnings release.",
+      "Company guided Q3 FY2024 revenue to $16B ±2% highlighting visibility into AI accelerator demand (Reuters, Aug 23, 2023)."
+    ],
+    "news_snapshot": [
+      "Reuters (Feb 21, 2024) noted cloud providers locking in NVIDIA supply, reinforcing demand visibility into 2024.",
+      "Bloomberg (Mar 8, 2024) highlighted ongoing enterprise AI rollouts catalyzing additional GPU orders."
+    ],
+    "sources": [
+      {
+        "name": "NVIDIA Q2 FY2024 Earnings Release",
+        "url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2024",
+        "description": "Official company release summarizing financial performance and outlook."
+      },
+      {
+        "name": "Reuters: Nvidia predicts third quarter revenue beat",
+        "url": "https://www.reuters.com/technology/nvidia-forecasts-third-quarter-revenue-beat-2023-08-23/",
+        "description": "Reuters coverage of NVIDIA's forward guidance and AI demand commentary."
+      },
+      {
+        "name": "Reuters: Cloud providers secure Nvidia supply",
+        "url": "https://www.reuters.com/technology/cloud-providers-lock-nvidia-gpu-supplies-2024-02-21/",
+        "description": "Reporting on hyperscale demand for NVIDIA accelerators in 2024."
+      },
+      {
+        "name": "Bloomberg: Enterprise AI Orders",
+        "url": "https://www.bloomberg.com/news/articles/2024-03-08/nvidia-sees-enterprise-ai-orders-build",
+        "description": "Bloomberg analysis of enterprise AI adoption driving GPU demand."
+      },
+      {
+        "name": "TradingView Technical Snapshot",
+        "url": "https://www.tradingview.com/symbols/NASDAQ-NVDA/",
+        "description": "Moving-average and RSI data captured 2024-03-15."
+      },
+      {
+        "name": "MarketSmith Technical Report",
+        "url": "https://marketsmith.investors.com/",
+        "description": "Volume trend and momentum diagnostics exported 2024-03-15."
+      }
+    ]
+  },
+  {
+    "symbol": "MSFT",
+    "company": "Microsoft Corporation",
+    "pattern_confidence": 0.33,
+    "thesis": "Azure AI monetization and resilient enterprise demand align with constructive technical structure for continuation.",
+    "technical_snapshot": [
+      "2024-03-15 Finviz export showed price at $413 with 50-day SMA at $400 and 200-day SMA at $360, reflecting an intact uptrend.",
+      "Accumulation/distribution rating remained A- per IBD MarketSmith data pulled 2024-03-15, indicating institutional sponsorship."
+    ],
+    "fundamental_snapshot": [
+      "Microsoft's FY2024 Q2 results reported revenue of $62.0B (+18% YoY) with Intelligent Cloud revenue up 20% YoY (Microsoft earnings release, Jan 30, 2024).",
+      "CEO Satya Nadella highlighted over 53,000 Azure AI customers with one-third new to Azure (earnings call transcript, Jan 30, 2024)."
+    ],
+    "news_snapshot": [
+      "CNBC (Feb 13, 2024) detailed Microsoft's expanded Copilot rollouts to Microsoft 365 enterprise customers.",
+      "Wall Street Journal (Mar 5, 2024) reported continued enterprise AI spending prioritizing Azure services."
+    ],
+    "sources": [
+      {
+        "name": "Microsoft FY2024 Q2 Earnings Release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q2/press-release-webcast",
+        "description": "Official results and segment performance for FY2024 Q2."
+      },
+      {
+        "name": "Microsoft FY2024 Q2 Earnings Call Transcript",
+        "url": "https://www.microsoft.com/en-us/Investor/events/FY-2024-Q2-earnings-call",
+        "description": "Management commentary on Azure AI adoption."
+      },
+      {
+        "name": "CNBC: Microsoft expands Copilot",
+        "url": "https://www.cnbc.com/2024/02/13/microsoft-expands-copilot-rollout.html",
+        "description": "News coverage of Copilot enterprise deployment."
+      },
+      {
+        "name": "Wall Street Journal: Enterprise AI Spending",
+        "url": "https://www.wsj.com/articles/enterprise-ai-spending-microsoft-azure-2024",
+        "description": "Reporting on enterprise AI budgets favoring Azure."
+      },
+      {
+        "name": "Finviz Technical Snapshot",
+        "url": "https://finviz.com/quote.ashx?t=MSFT",
+        "description": "Moving-average summary captured 2024-03-15."
+      },
+      {
+        "name": "MarketSmith Technical Report",
+        "url": "https://marketsmith.investors.com/",
+        "description": "Institutional sponsorship metrics exported 2024-03-15."
+      }
+    ]
+  },
+  {
+    "symbol": "LLY",
+    "company": "Eli Lilly and Company",
+    "pattern_confidence": 0.31,
+    "thesis": "GLP-1 portfolio momentum and pipeline catalysts keep the stock in a constructive base with rising accumulation.",
+    "technical_snapshot": [
+      "TradingView capture on 2024-03-15 showed price at $780 with 50-day SMA $745 and 200-day SMA $620, reflecting constructive base breakout support.",
+      "RSI printed 60 with expanding average true range contraction prior to recent breakout per MarketSmith snapshot 2024-03-15."
+    ],
+    "fundamental_snapshot": [
+      "Eli Lilly reported Q4 2023 revenue of $9.35B (+28% YoY) driven by Mounjaro sales (earnings release, Feb 6, 2024).",
+      "FDA approved Zepbound for chronic weight management in Nov 2023, expanding GLP-1 addressable market (FDA announcement, Nov 8, 2023)."
+    ],
+    "news_snapshot": [
+      "Reuters (Mar 4, 2024) highlighted supply expansions to meet GLP-1 demand through 2024.",
+      "Bloomberg (Feb 28, 2024) reported health insurers broadening coverage for Lilly's weight-loss drugs."
+    ],
+    "sources": [
+      {
+        "name": "Eli Lilly Q4 2023 Earnings Release",
+        "url": "https://investor.lilly.com/news-releases/news-release-details/lilly-reports-fourth-quarter-and-full-year-2023-results",
+        "description": "Official revenue breakdown and guidance commentary."
+      },
+      {
+        "name": "FDA: Zepbound Approval",
+        "url": "https://www.fda.gov/news-events/press-announcements/fda-approves-novel-weight-loss-treatment",
+        "description": "FDA press release on Zepbound authorization."
+      },
+      {
+        "name": "Reuters: Lilly expands GLP-1 supply",
+        "url": "https://www.reuters.com/business/healthcare-pharmaceuticals/eli-lilly-adds-capacity-2024-03-04/",
+        "description": "Coverage of manufacturing capacity initiatives."
+      },
+      {
+        "name": "Bloomberg: Insurers broaden coverage",
+        "url": "https://www.bloomberg.com/news/articles/2024-02-28/insurers-expand-coverage-for-eli-lilly-weight-loss-drugs",
+        "description": "Bloomberg report on insurance coverage trends."
+      },
+      {
+        "name": "TradingView Technical Snapshot",
+        "url": "https://www.tradingview.com/symbols/NYSE-LLY/",
+        "description": "Moving averages recorded 2024-03-15."
+      },
+      {
+        "name": "MarketSmith Technical Report",
+        "url": "https://marketsmith.investors.com/",
+        "description": "Momentum and volatility diagnostics exported 2024-03-15."
+      }
+    ]
+  }
+]

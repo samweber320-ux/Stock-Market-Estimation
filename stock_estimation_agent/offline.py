@@ -9,7 +9,8 @@ from typing import Iterable, List
 
 import pandas as pd
 
-from .data_sources import MarketNewsFetcher, VerifiedSource
+from .data_sources import MarketNewsFetcher
+from .sources import VerifiedSource
 
 
 @dataclass

@@ -11,7 +11,8 @@ import math
 
 import pandas as pd
 
-from .data_sources import HistoricalDataFetcher, TopGainer, VerifiedSource
+from .data_sources import HistoricalDataFetcher, TopGainer
+from .sources import VerifiedSource
 from .indicators import IndicatorCalculator
 
 

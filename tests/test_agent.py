@@ -11,8 +11,8 @@ from stock_estimation_agent.data_sources import (
     MarketNewsFetcher,
     StaticTopGainersFetcher,
     TopGainer,
-    VerifiedSource,
 )
+from stock_estimation_agent.sources import VerifiedSource
 from stock_estimation_agent.estimation import EstimationEngine
 from stock_estimation_agent.indicators import IndicatorCalculator
 from stock_estimation_agent.top_gainers import TopGainerAnalytics

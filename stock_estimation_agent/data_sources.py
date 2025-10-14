@@ -1,20 +1,12 @@
 """Utilities for retrieving historical market data and news from verified sources."""
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import datetime
 from typing import Iterable, List, Optional, Protocol
 
 import pandas as pd
 
-
-@dataclass
-class VerifiedSource:
-    """Descriptor of a source used in the estimation process."""
-
-    name: str
-    url: str
-    description: str
+from .sources import VerifiedSource
 
 
 class HistoricalDataFetcher(Protocol):

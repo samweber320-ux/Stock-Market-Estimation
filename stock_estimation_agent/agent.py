@@ -7,14 +7,10 @@ from typing import Dict, Iterable, List, Optional
 
 import pandas as pd
 
-from .data_sources import (
-    HistoricalDataFetcher,
-    MarketNewsFetcher,
-    TopGainersFetcher,
-    VerifiedSource,
-)
+from .data_sources import HistoricalDataFetcher, MarketNewsFetcher, TopGainersFetcher
 from .indicators import IndicatorCalculator
 from .estimation import EstimationEngine, EstimationResult
+from .sources import VerifiedSource
 from .user_data import UserDatasetRegistry
 from .top_gainers import TopGainerAnalytics
 
