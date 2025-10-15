@@ -25,6 +25,19 @@ run also stores a memory of the indicator snapshot, interpretations, and
 any lesson you attach, letting you review prior observations like a
 research journal.
 
+## Information Sources
+
+* **Price and volume history:** Pulled from Yahoo Finance via the
+  `yfinance` package each time you request a symbol. The script refreshes
+  data using US Central time so the latest completed session is
+  represented.
+* **Cached market data:** Every download is written to
+  `data_store/<symbol>.csv` and reused on subsequent runs to avoid
+  redundant network requests while preserving historical context.
+* **Analyst memory files:** Interpretations and optional notes are saved
+  under `data_store/memories/<symbol>.json`. These files act as the
+  tool's learning archive so prior insights can inform future research.
+
 ## Getting Started
 
 ```bash

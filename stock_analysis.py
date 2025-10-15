@@ -468,6 +468,8 @@ def print_report(
     print()
     print(f"Data cached at: {data_store_path}")
     print(f"Memory stored at: {memory_path}")
+    print("Information sources: Yahoo Finance price/volume data via yfinance; "
+          "local cache and memory files for prior analyses.")
     print("Interpretation")
     print("-------------")
     for statement in interpretations:
