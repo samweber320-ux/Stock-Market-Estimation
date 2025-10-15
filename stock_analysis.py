@@ -290,6 +290,7 @@ def interpret_snapshot(snapshot: IndicatorSnapshot) -> List[str]:
 
 DATA_STORE_DIR = Path("data_store")
 MEMORY_DIR = DATA_STORE_DIR / "memories"
+DEFAULT_MEMORY_RETENTION_DAYS = 7
 
 
 def _memory_path(symbol: str) -> Path:
@@ -310,17 +311,47 @@ def load_memory(symbol: str) -> list[dict[str, object]]:
         return []
 
 
+def filter_recent_history(
+    history: list[dict[str, object]], retention_days: int
+) -> list[dict[str, object]]:
+    """Keep only entries that fall within the retention window."""
+
+    cutoff = datetime.now(tz=ZoneInfo("America/Chicago")) - timedelta(days=retention_days)
+    recent: list[dict[str, object]] = []
+
+    for entry in history:
+        as_of_str = entry.get("as_of")
+        if not isinstance(as_of_str, str):
+            continue
+
+        try:
+            as_of = datetime.fromisoformat(as_of_str)
+        except ValueError:
+            continue
+
+        if as_of.tzinfo is None:
+            as_of = as_of.replace(tzinfo=ZoneInfo("UTC"))
+
+        if as_of >= cutoff:
+            recent.append(entry)
+
+    return recent
+
+
 def store_memory(
     symbol: str,
     snapshot: IndicatorSnapshot,
     interpretations: Iterable[str],
     note: Optional[str],
     data_store_path: Path,
-) -> Path:
+    retention_days: int,
+) -> tuple[Path, int]:
     """Persist the analysis snapshot so future runs can learn from it."""
 
     path = _memory_path(symbol)
     history = load_memory(symbol)
+    recent_history = filter_recent_history(history, retention_days)
+    pruned_count = len(history) - len(recent_history)
 
     record = {
         "as_of": snapshot.as_of.isoformat(),
@@ -341,9 +372,9 @@ def store_memory(
         "stored_at": datetime.now(tz=ZoneInfo("America/Chicago")).isoformat(),
     }
 
-    history.append(record)
-    path.write_text(json.dumps(history, indent=2))
-    return path
+    recent_history.append(record)
+    path.write_text(json.dumps(recent_history, indent=2))
+    return path, pruned_count
 
 
 def determine_central_date_range(
@@ -414,18 +445,31 @@ def format_currency(value: float) -> str:
     return f"${value:,.2f}"
 
 
-def print_memory_history(symbol: str, history: list[dict[str, object]], limit: Optional[int]) -> None:
+def print_memory_history(
+    symbol: str,
+    history: list[dict[str, object]],
+    limit: Optional[int],
+    retention_days: int,
+) -> None:
     """Display previously stored analyses for reference."""
 
-    if not history:
-        print(f"No stored memory found for {symbol.upper()} yet.")
+    recent_history = filter_recent_history(history, retention_days)
+
+    if not recent_history:
+        print(
+            f"No stored memory within the last {retention_days} day(s) for {symbol.upper()} yet."
+        )
         return
 
     if limit is not None and limit > 0:
-        to_show = history[-limit:]
+        to_show = recent_history[-limit:]
     else:
-        to_show = history
+        to_show = recent_history
 
+    retained_message = (
+        f"Showing {len(to_show)} stored analyses from the last {retention_days} day(s)."
+    )
+    print(retained_message)
     print("Stored analyses")
     print("---------------")
     for entry in to_show:
@@ -449,6 +493,8 @@ def print_report(
     interpretations: Iterable[str],
     data_store_path: Path,
     memory_path: Path,
+    retention_days: int,
+    pruned_count: int,
 ) -> None:
     """Pretty-print the indicator snapshot and interpretations."""
 
@@ -467,7 +513,11 @@ def print_report(
     print(f"A/D 5-day change: {snapshot.ad_trend:,.0f}")
     print()
     print(f"Data cached at: {data_store_path}")
-    print(f"Memory stored at: {memory_path}")
+    memory_line = (
+        f"Memory stored at: {memory_path} (retaining {retention_days} day window"
+        f"; removed {pruned_count} stale entr{'y' if pruned_count == 1 else 'ies'})."
+    )
+    print(memory_line)
     print("Information sources: Yahoo Finance price/volume data via yfinance; "
           "local cache and memory files for prior analyses.")
     print("Interpretation")
@@ -508,6 +558,15 @@ def build_parser() -> argparse.ArgumentParser:
         default=5,
         help="Limit how many prior analyses are displayed when --show-history is used (default: 5).",
     )
+    parser.add_argument(
+        "--memory-retention-days",
+        type=int,
+        default=DEFAULT_MEMORY_RETENTION_DAYS,
+        help=(
+            "Number of days of stored analyses to retain. Older entries are pruned automatically "
+            "to ensure only up-to-date information is recycled."
+        ),
+    )
     return parser
 
 
@@ -516,9 +575,10 @@ def main(args: Optional[Iterable[str]] = None) -> None:
     parsed = parser.parse_args(args=args)
 
     lookback_days = max(parsed.lookback_days, 1)
+    retention_days = max(parsed.memory_retention_days, 1)
     if parsed.show_history:
         history = load_memory(parsed.symbol)
-        print_memory_history(parsed.symbol, history, parsed.history_limit)
+        print_memory_history(parsed.symbol, history, parsed.history_limit, retention_days)
         print()
 
     data = download_price_history(
@@ -530,14 +590,23 @@ def main(args: Optional[Iterable[str]] = None) -> None:
     data_store_path = store_price_history(parsed.symbol, data)
     snapshot = summarize_indicators(data)
     interpretations = interpret_snapshot(snapshot)
-    memory_path = store_memory(
+    memory_path, pruned_count = store_memory(
         parsed.symbol,
         snapshot,
         interpretations,
         parsed.note,
         data_store_path,
+        retention_days,
     )
-    print_report(parsed.symbol, snapshot, interpretations, data_store_path, memory_path)
+    print_report(
+        parsed.symbol,
+        snapshot,
+        interpretations,
+        data_store_path,
+        memory_path,
+        retention_days,
+        pruned_count,
+    )
 
 
 if __name__ == "__main__":

@@ -23,7 +23,8 @@ of relying on a single signal. Every download is cached locally so that
 subsequent analyses can build on the data previously collected. Each
 run also stores a memory of the indicator snapshot, interpretations, and
 any lesson you attach, letting you review prior observations like a
-research journal.
+research journal. To emphasise up-to-date context, the stored memories
+are automatically pruned so only recent observations are recycled.
 
 ## Information Sources
 
@@ -73,6 +74,13 @@ analyses to simulate a learning workflow:
 python stock_analysis.py NVDA --note "Watch for MACD crossovers." --show-history --history-limit 3
 ```
 
+Tighten or extend how long the tool retains past analyses so only fresh
+observations are surfaced:
+
+```bash
+python stock_analysis.py META --memory-retention-days 3
+```
+
 ## Notes
 
 * Yahoo Finance data retrieval requires an active internet connection.
@@ -80,5 +88,7 @@ python stock_analysis.py NVDA --note "Watch for MACD crossovers." --show-history
   provide trading advice.
 * Cached CSV files are written to `data_store/` for future reference.
 * Stored memories live under `data_store/memories/` and capture each
-  indicator snapshot plus any note you supply.
+  indicator snapshot plus any note you supply. Entries older than the
+  retention window (seven days by default) are trimmed automatically so
+  analyses rely on recently updated information.
 
